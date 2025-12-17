@@ -29,12 +29,14 @@ const ModuleOutput: React.FC<ModuleOutputProps> = ({ content, onReset }) => {
               h1 { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
               h2 { font-size: 18px; font-weight: bold; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #ccc; }
               h3 { font-size: 16px; font-weight: bold; margin-top: 15px; margin-bottom: 5px; }
+              h4 { font-size: 14px; font-weight: bold; margin-top: 10px; }
               p, li { font-size: 12pt; margin-bottom: 4px; }
               table { width: 100%; border-collapse: collapse; margin: 15px 0; }
               th, td { border: 1px solid #000; padding: 10px; text-align: left; vertical-align: top; }
               th { background-color: #f2f2f2; font-weight: bold; }
               ul, ol { padding-left: 20px; margin-top: 5px; margin-bottom: 5px; }
               blockquote { border-left: 3px solid #ccc; padding-left: 10px; font-style: italic; margin: 10px 0; }
+              .page-break { page-break-before: always; }
               @page { margin: 2cm; }
             </style>
           </head>
@@ -55,6 +57,8 @@ const ModuleOutput: React.FC<ModuleOutputProps> = ({ content, onReset }) => {
     const element = document.getElementById('markdown-content');
     if (!element) return;
 
+    // Clean up content specifically for Word export if needed
+    // Word handles <br> well generally
     const htmlContent = `
       <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
       <head>
@@ -62,7 +66,7 @@ const ModuleOutput: React.FC<ModuleOutputProps> = ({ content, onReset }) => {
         <title>Modul Ajar</title>
         <style>
           body { font-family: 'Times New Roman', serif; }
-          h1, h2, h3 { color: #000000; }
+          h1, h2, h3, h4 { color: #000000; }
           table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
           td, th { border: 1px solid #000000; padding: 8px; text-align: left; vertical-align: top; }
           th { background-color: #f2f2f2; }
@@ -87,6 +91,39 @@ const ModuleOutput: React.FC<ModuleOutputProps> = ({ content, onReset }) => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+  // Function to process children and replace <br> string with <br /> element
+  const renderWithLineBreaks = (children: React.ReactNode): React.ReactNode => {
+    if (typeof children === 'string') {
+      // Split by <br> or <br/> or <br /> case insensitive
+      const parts = children.split(/<br\s*\/?>/gi);
+      return parts.map((part, i) => (
+        <React.Fragment key={i}>
+          {part}
+          {i < parts.length - 1 && <br />}
+        </React.Fragment>
+      ));
+    }
+    
+    if (Array.isArray(children)) {
+      return children.map((child, index) => (
+        <React.Fragment key={index}>{renderWithLineBreaks(child)}</React.Fragment>
+      ));
+    }
+    
+    // If it's an object (React Element), try to process its children prop if it exists
+    if (React.isValidElement(children)) {
+      const element = children as React.ReactElement<any>;
+      if (element.props.children) {
+        return React.cloneElement(element, {
+          ...element.props,
+          children: renderWithLineBreaks(element.props.children)
+        });
+      }
+    }
+
+    return children;
   };
 
   return (
@@ -144,7 +181,12 @@ const ModuleOutput: React.FC<ModuleOutputProps> = ({ content, onReset }) => {
             table: ({node, ...props}) => <div className="overflow-x-auto my-6"><table className="min-w-full divide-y divide-gray-200 border border-gray-300" {...props} /></div>,
             thead: ({node, ...props}) => <thead className="bg-gray-100" {...props} />,
             th: ({node, ...props}) => <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border border-gray-300" {...props} />,
-            td: ({node, ...props}) => <td className="px-6 py-4 whitespace-normal text-sm text-gray-600 border border-gray-300 align-top leading-relaxed" {...props} />,
+            // Updated td renderer to handle <br>
+            td: ({node, children, ...props}) => (
+              <td className="px-6 py-4 whitespace-normal text-sm text-gray-600 border border-gray-300 align-top leading-relaxed" {...props}>
+                {renderWithLineBreaks(children)}
+              </td>
+            ),
             blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-500 pl-4 py-2 my-4 bg-blue-50 text-blue-800 italic rounded-r" {...props} />,
             strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />
           }}

@@ -42,14 +42,24 @@ Anda adalah "Deep Learning Module Engine", sebuah AI ahli kurikulum yang berspes
 * **Catatan Guru:** ${formatForTable(data.teacherNotes)}
 
 **INSTRUKSI DESAIN**
-1. **Tujuan & Identifikasi:** 
-   * Gunakan *Dimensi Profil Lulusan* yang dipilih user. 
-   * Jika user mengisi *Tujuan Pembelajaran*, gunakan teks tersebut (rapikan formatnya menjadi poin-poin). 
-   * Jika TP kosong, rumuskan TP berdasarkan *Capaian Pembelajaran* dan *Topik* menggunakan KKO yang terukur (Taksonomi SOLO/Bloom).
+1. **Perlakuan Input (PENTING):** 
+   * **Capaian Pembelajaran (CP):** Tampilkan CP sesuai input user di tabel Informasi Umum.
+   * **Tujuan Pembelajaran (TP):** Jika user mengisi input TP, **GUNAKAN INPUT TERSEBUT PERSIS** (hanya rapikan format menjadi poin-poin). JANGAN mengarang TP baru jika user sudah menyediakannya. Jika kosong, baru rumuskan TP menggunakan KKO yang terukur (Taksonomi SOLO/Bloom).
+   
 2. **Desain Aktivitas (TABEL):**
    * Gunakan sintaks *${data.pedagogicalPractice}*.
    * Pastikan siklus Deep Learning (Memahami -> Mengaplikasi -> Merefleksi) terdistribusi.
-   * **PENTING:** Pada kolom "Langkah-langkah Pembelajaran", pisahkan setiap langkah dengan \`<br><br>\` agar terlihat rapi seperti paragraf terpisah.
+   * **Rutinitas Awal:** Setiap pertemuan WAJIB diawali dengan: Menyapa, Mengabsen, dan Berdoa.
+   * **Pertemuan 1:** WAJIB ada **Pertanyaan Pemantik** dan **Pernyataan Bermakna** (manfaat kehidupan nyata).
+   * **Visualisasi:** Gunakan placeholder *[GAMBAR: Deskripsi]* jika perlu.
+
+3. **Desain Asesmen (INTEGRASI PROFIL):**
+   * Asesmen WAJIB mengukur pemahaman materi DAN **Dimensi Profil Lulusan** yang dipilih: **${data.graduateProfileDimensions.join(", ") || "Umum"}**.
+   * **LOGIKA ASESMEN:**
+     - Jika dimensi *Bernalar Kritis* dipilih, soal/instrumen harus menuntut analisis (HOTS), bukan sekadar hafalan.
+     - Jika dimensi *Kreativitas* dipilih, instrumen harus menilai orisinalitas ide/produk.
+     - Jika dimensi *Gotong Royong* dipilih, wajib ada rubrik penilaian kolaborasi.
+     - Jika dimensi *Beriman/Bertakwa* dipilih, kaitkan materi dengan refleksi nilai spiritual/moral.
 
 **FORMAT OUTPUT (MARKDOWN)**
 
@@ -64,27 +74,27 @@ Anda adalah "Deep Learning Module Engine", sebuah AI ahli kurikulum yang berspes
 | Mapel/Fase | ${data.subject} / ${data.phaseClass} |
 | Topik | ${data.topic} |
 | Alokasi Waktu | ${data.meetings} Pertemuan x ${data.duration} JP |
-| Capaian Pembelajaran | ${formatForTable(data.learningOutcomes)} |
+| **Capaian Pembelajaran** | ${formatForTable(data.learningOutcomes)} |
 | Kompetensi Awal | ${formatForTable(data.priorKnowledge)} |
 | Profil Lulusan | ${data.graduateProfileDimensions.join(", ") || "Disesuaikan"} |
 | Praktik Pedagogis | ${data.pedagogicalPractice} |
 | Sarana Digital | ${formatForTable(data.digitalUtilization)} |
 
 ## B. Tujuan Pembelajaran
-*(Jika user mengisi TP, tampilkan di sini. Jika tidak, hasilkan TP yang relevan)*
+*(Gunakan TP dari input user di atas. Jika kosong, gunakan TP hasil rumusan AI)*
 1. ...
 2. ...
 
 ## C. Rincian Kegiatan Pembelajaran
 
-*(Ulangi tabel di bawah ini untuk setiap Pertemuan 1 s.d. ${data.meetings})*
+*(Ulangi tabel di bawah ini untuk setiap Pertemuan 1 s.d. ${data.meetings}. Pastikan Pertemuan 1 memiliki Pertanyaan Pemantik & Pernyataan Bermakna)*
 
 ### Pertemuan [X]
 
 | Pengalaman Belajar | Langkah-langkah Pembelajaran | Waktu |
 | --- | --- | --- |
-| **Pendahuluan** | **Kegiatan Awal**<br>1. Guru menyapa dan memeriksa kehadiran.<br>2. Apersepsi: Mengaitkan materi dengan *${formatForTable(data.priorKnowledge)}*.<br>3. Pertanyaan pemantik untuk menggugah nalar kritis. | 15 menit |
-| **Inti**<br>*(Memahami / Mengaplikasi / Merefleksi)* | **Sintaks ${data.pedagogicalPractice}:**<br><br>1. [Langkah 1 Model Belajar].<br>   *Deskripsi aktivitas siswa yang mendalam.*<br><br>2. [Langkah 2 Model Belajar].<br>   *Deskripsi aktivitas kolaborasi/eksplorasi.*<br><br>3. [Langkah 3 Model Belajar].<br>   *Deskripsi penyelesaian masalah/proyek.* | ... menit |
+| **Pendahuluan** | **Rutinitas Awal:**<br>1. Guru menyapa siswa dengan ramah.<br>2. Guru memeriksa kehadiran peserta didik.<br>3. Guru memimpin doa sebelum belajar.<br><br>**Apersepsi & Motivasi:**<br>*(Khusus Pertemuan 1: Masukkan Pertanyaan Pemantik & Pernyataan Bermakna di sini)*<br>*(Pertemuan selanjutnya: Review materi sebelumnya)*<br>4. Menyampaikan tujuan pembelajaran. | 15 menit |
+| **Inti**<br>*(Memahami / Mengaplikasi / Merefleksi)* | **Sintaks ${data.pedagogicalPractice}:**<br><br>1. [Langkah 1 Model Belajar].<br>   *Deskripsi aktivitas siswa yang mendalam.*<br>   *[GAMBAR: Jika perlu, deskripsikan ilustrasi pendukung di sini]*<br><br>2. [Langkah 2 Model Belajar].<br>   *Deskripsi aktivitas kolaborasi/eksplorasi.*<br><br>3. [Langkah 3 Model Belajar].<br>   *Deskripsi penyelesaian masalah/proyek.* | ... menit |
 | **Penutup** | **Kegiatan Penutup**<br>1. Refleksi bersama siswa.<br>2. Penyimpulan materi.<br>3. Doa penutup. | 15 menit |
 
 ## D. Asesmen
@@ -95,16 +105,28 @@ Anda adalah "Deep Learning Module Engine", sebuah AI ahli kurikulum yang berspes
 | Formatif | [Metode] | [Instrumen] |
 | Sumatif | [Metode] | [Instrumen] |
 
-## E. Lampiran
-* Lembar Kerja Peserta Didik (LKPD)
-* Bahan Bacaan Guru & Peserta Didik
-
 <br>
 
 | Mengetahui,<br>Kepala Sekolah | Guru Mata Pelajaran |
 | :--- | :--- |
 | <br><br><br><br> **${data.principalName}** | <br><br><br><br> **${data.teacherName}** |
 | NIP. ${data.principalNip} | NIP. ${data.teacherNip} |
+
+---
+
+## E. Lampiran Lengkap
+
+### 1. Instrumen Asesmen
+*(Buatkan **detail** instrumen asesmen. **PENTING:** Pastikan butir soal atau kriteria rubrik secara eksplisit menguji/menilai Dimensi Profil Lulusan yang dipilih (${data.graduateProfileDimensions.join(", ")}). Contoh: "Soal nomor 3 menguji Bernalar Kritis karena meminta siswa menganalisis penyebab...")*
+
+### 2. Lembar Kerja Peserta Didik (LKPD)
+*(Buatkan **contoh nyata** LKPD yang bisa langsung difotokopi. Berisi: Judul Aktivitas, Petunjuk Pengerjaan, Soal/Tabel Pengamatan, dan sertakan tag [GAMBAR: ...] untuk menunjukkan posisi ilustrasi)*
+
+### 3. Poin Penting Presentasi Guru
+*(Buatkan ringkasan poin-poin materi (slide) yang harus dipresentasikan guru di depan kelas. Sertakan ide visualisasi/gambar untuk setiap poin penting)*
+
+### 4. Bahan Bacaan Guru & Peserta Didik
+*(Berikan ringkasan materi esensial sekitar 2-3 paragraf untuk penguatan pemahaman topik ${data.topic})*
 `;
 
   try {
@@ -112,7 +134,7 @@ Anda adalah "Deep Learning Module Engine", sebuah AI ahli kurikulum yang berspes
       model: 'gemini-3-pro-preview',
       contents: prompt,
       config: {
-        thinkingConfig: { thinkingBudget: 2048 },
+        thinkingConfig: { thinkingBudget: 4096 },
       }
     });
 
